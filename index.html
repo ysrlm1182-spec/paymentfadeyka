@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran • DANA & GOPAY</title>
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0b0f1a 0%, #1a1f2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Efek glow & partikel halus */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 180, 255, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(138, 43, 226, 0.15) 0%, transparent 45%);
+            pointer-events: none;
+        }
+
+        .payment-card {
+            position: relative;
+            width: 100%;
+            max-width: 580px;
+            background: rgba(18, 22, 35, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2.5rem;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 30px 50px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+            transition: transform 0.25s ease;
+            z-index: 10;
+        }
+
+        .payment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 35px 55px -12px #000000cc, 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 1.5rem;
+        }
+
+        .header-icon {
+            background: linear-gradient(135deg, #2a6df4, #a855f7);
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 18px -4px rgba(42, 109, 244, 0.4);
+        }
+
+        .header-icon i {
+            font-size: 1.8rem;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .header-text h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .header-text p {
+            font-size: 0.85rem;
+            color: #9aa4bf;
+            margin-top: 0.2rem;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        /* Metode pembayaran */
+        .method-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .method-card {
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 1.8rem;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .method-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: scale(1.01);
+        }
+
+        .method-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(145deg, #1e2538, #121724);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.6);
+            flex-shrink: 0;
+        }
+
+        .method-icon.dana i {
+            color: #118eea;
+            text-shadow: 0 0 12px rgba(17, 142, 234, 0.5);
+        }
+
+        .method-icon.gopay i {
+            color: #00aa5b;
+            text-shadow: 0 0 12px rgba(0, 170, 91, 0.45);
+        }
+
+        .method-detail {
+            flex: 1;
+        }
+
+        .method-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .method-name span {
+            font-size: 0.7rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            color: #cbd5e1;
+            letter-spacing: 0.3px;
+        }
+
+        .account-number {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+            margin: 0.3rem 0 0.15rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', monospace;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .account-number i {
+            font-size: 0.9rem;
+            color: #7f8aa8;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0.3rem;
+        }
+
+        .account-number i:hover {
+            color: #a5b3d9;
+        }
+
+        .account-name {
+            font-size: 0.85rem;
+            color: #b0bbd4;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        .account-name i {
+            font-size: 0.7rem;
+            color: #5e6b8a;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0 1.2rem;
+            color: #3e475e;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        /* Tombol aksi */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-top: 1.8rem;
+        }
+
+        .btn {
+            border: none;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 1rem 1.5rem;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #eef2ff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(8px);
+            letter-spacing: 0.2px;
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+            color: #7c8bb0;
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .btn:hover i {
+            transform: translateX(4px);
+            color: #b3c2e6;
+        }
+
+        .btn-primary {
+            background: linear-gradient(105deg, #2563eb, #7e3af2);
+            border: none;
+            box-shadow: 0 12px 24px -8px rgba(37, 99, 235, 0.5);
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-primary i {
+            color: white;
+            opacity: 0.9;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(105deg, #1e4fd8, #6d28d9);
+            box-shadow: 0 16px 28px -8px #2563eb;
+        }
+
+        .btn-primary:hover i {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Catatan kecil */
+        .footer-note {
+            margin-top: 1.8rem;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #54617e;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 1.5rem;
+        }
+
+        .footer-note i {
+            color: #4a5b7c;
+        }
+
+        /* Toast notifikasi copy */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(20, 25, 40, 0.95);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 35px -8px black;
+            opacity: 0;
+            transition: opacity 0.25s, transform 0.25s;
+            pointer-events: none;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast i {
+            color: #4ade80;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            .payment-card {
+                padding: 1.8rem 1.2rem;
+                border-radius: 2rem;
+            }
+
+            .header-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+            }
+
+            .header-icon i {
+                font-size: 1.5rem;
+            }
+
+            .header-text h1 {
+                font-size: 1.4rem;
+            }
+
+            .method-card {
+                padding: 1rem 1rem;
+                gap: 1rem;
+            }
+
+            .method-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.7rem;
+                border-radius: 16px;
+            }
+
+            .account-number {
+                font-size: 1.25rem;
+            }
+
+            .btn {
+                padding: 0.9rem 1.2rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-card">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="header-text">
+                <h1>Pembayaran</h1>
+                <p>DANA & GOPAY • instant</p>
+            </div>
+        </div>
+
+        <!-- Metode Pembayaran -->
+        <div class="method-section">
+            <!-- DANA -->
+            <div class="method-card">
+                <div class="method-icon dana">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="method-detail">
+                    <div class="method-name">
+                        DANA <span>e-wallet</span>
+                    </div>
+                    <div class="account-number" id="danaNumber">
+                        081324330540
+                        <i class="far fa-copy" data-number="081324330540" title="Salin nomor DANA"></i>
+                    </div>
+                    <div class="account-name">
+                        <i class="fas fa-user-circle"></i> ALLURA EFRANANTA OLLIVERALDA
+                    </div>
+                </div>
+            </div>
+
+            <!-- GOPAY -->
+            <div class="method-card">
+                <div class="method-icon gopay">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="method-detail">
+                    <div class="method-name">
+                        GOPAY <span>e-wallet</span>
+                    </div>
+                    <div class="account-number" id="gopayNumber">
+                        081324330540
+                        <i class="far fa-copy" data-number="081324330540" title="Salin nomor GOPAY"></i>
+                    </div>
+                    <div class="account-name">
+                        <i class="fas fa-user-circle"></i> ALLURA EFRANANTA OLLIVERALDA
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider">
+            <span>KONFIRMASI</span>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="action-buttons">
+            <button class="btn" id="copyAllBtn">
+                <span><i class="fas fa-copy" style="margin-right: 10px;"></i> Salin semua detail</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="btn btn-primary" id="confirmBtn">
+                <span><i class="fas fa-check-circle" style="margin-right: 8px;"></i> Saya sudah transfer</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Catatan -->
+        <div class="footer-note">
+            <i class="fas fa-shield-alt"></i>
+            <span>Nomor tujuan terverifikasi • ALLURA EFRANANTA OLLIVERALDA</span>
+        </div>
+    </div>
+
+    <!-- Toast Notifikasi -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Nomor berhasil disalin!</span>
+    </div>
+
+    <script>
+        (function() {
+            // Fungsi untuk menyalin teks ke clipboard
+            function copyToClipboard(text) {
+                if (navigator.clipboard && window.isSecureContext) {
+                    return navigator.clipboard.writeText(text);
+                } else {
+                    // Fallback untuk browser lama
+                    return new Promise((resolve, reject) => {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = text;
+                        textArea.style.position = 'fixed';
+                        textArea.style.opacity = '0';
+                        textArea.style.left = '-9999px';
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            resolve();
+                        } catch (err) {
+                            reject(err);
+                        } finally {
+                            document.body.removeChild(textArea);
+                        }
+                    });
+                }
+            }
+
+            // Tampilkan toast
+            function showToast(message, isSuccess = true) {
+                const toast = document.getElementById('toast');
+                const toastMessage = document.getElementById('toastMessage');
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }
+
+            // Salin nomor individu
+            document.querySelectorAll('.fa-copy').forEach(icon => {
+                icon.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const number = icon.getAttribute('data-number');
+                    if (!number) return;
+                    try {
+                        await copyToClipboard(number);
+                        showToast(`Nomor ${number} disalin!`);
+                    } catch (err) {
+                        showToast('Gagal menyalin, coba manual', false);
+                    }
+                });
+            });
+
+            // Salin semua detail (DANA + GOPAY)
+            const copyAllBtn = document.getElementById('copyAllBtn');
+            copyAllBtn.addEventListener('click', async () => {
+                const detailText = `DANA: 081324330540 (ALLURA EFRANANTA OLLIVERALDA)\nGOPAY: 081324330540 (ALLURA EFRANANTA OLLIVERALDA)`;
+                try {
+                    await copyToClipboard(detailText);
+                    showToast('Semua detail pembayaran disalin!');
+                } catch (err) {
+                    showToast('Gagal menyalin, coba manual', false);
+                }
+            });
+
+            // Konfirmasi transfer (simulasi)
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.addEventListener('click', () => {
+                showToast('Terima kasih! Pembayaran akan segera diproses.', true);
+                // Opsional: efek visual
+                confirmBtn.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    confirmBtn.style.transform = '';
+                }, 150);
+            });
+
+            // Efek klik pada tombol salin di nomor
+            document.querySelectorAll('.account-number i').forEach(icon => {
+                icon.addEventListener('mouseenter', () => {
+                    icon.style.color = '#ffffff';
+                });
+                icon.addEventListener('mouseleave', () => {
+                    icon.style.color = '#7f8aa8';
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
